@@ -95,7 +95,7 @@ train_aot() {
 	wait ${PID}
 	echo -e "Training finished. AOT cache created: HytaleServer.aot"
 	touch ./Server/aot-retrained.info
-	rm -f training.log
+	rm -f ./Server/training.log
 }
 
 if [ ! -f "./Server/aot-retrained.info" ]; then
