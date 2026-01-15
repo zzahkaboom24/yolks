@@ -88,6 +88,7 @@ train_aot() {
 		if [[ "${LINE}" == *"Hytale Server Booted"* ]]; then
 			echo -e "Detected 'Hytale Server Booted' – sending stop command to finish training..."
 			kill -TERM ${PID}
+			pkill -P $$ tail
 			break
 		fi
 	done
