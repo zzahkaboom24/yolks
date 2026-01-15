@@ -76,8 +76,10 @@ train_aot() {
 	if [ -f "./Server/HytaleServer.aot" ]; then
 		rm -f ./Server/HytaleServer.aot
 	fi
+
+	: > ./Server/training.log
 	
-	java -XX:AOTCacheOutput=Server/HytaleServer.aot -Xms128M $( ((SERVER_MEMORY)) && printf %s "-Xmx${SERVER_MEMORY}M" ) -jar Server/HytaleServer.jar $( ((HYTALE_ALLOW_OP)) && printf %s "--allow-op" ) $( ((HYTALE_ACCEPT_EARLY_PLUGINS)) && printf %s "--accept-early-plugins" ) $( ((DISABLE_SENTRY)) && printf %s "--disable-sentry" ) --auth-mode ${HYTALE_AUTH_MODE} --assets Assets.zip --bind 0.0.0.0:${SERVER_PORT} > training.log 2>&1 &
+	java -XX:AOTCacheOutput=Server/HytaleServer.aot -Xms128M $( ((SERVER_MEMORY)) && printf %s "-Xmx${SERVER_MEMORY}M" ) -jar Server/HytaleServer.jar $( ((HYTALE_ALLOW_OP)) && printf %s "--allow-op" ) $( ((HYTALE_ACCEPT_EARLY_PLUGINS)) && printf %s "--accept-early-plugins" ) $( ((DISABLE_SENTRY)) && printf %s "--disable-sentry" ) --auth-mode ${HYTALE_AUTH_MODE} --assets Assets.zip --bind 0.0.0.0:${SERVER_PORT} > ./Server/training.log 2>&1 &
 	PID=$!
 
 	tail -f training.log | while read -r LINE; do
@@ -92,11 +94,11 @@ train_aot() {
 
 	wait ${PID}
 	echo -e "Training finished. AOT cache created: HytaleServer.aot"
-	touch ./Server/aot-retrained.aot
+	touch ./Server/aot-retrained.info
 	rm -f training.log
 }
 
-if [ ! -f "./Server/aot-retrained.aot" ]; then
+if [ ! -f "./Server/aot-retrained.info" ]; then
     train_aot
 fi
 
