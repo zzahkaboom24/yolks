@@ -82,7 +82,7 @@ train_aot() {
 	java -XX:AOTCacheOutput=Server/HytaleServer.aot -Xms128M $( ((SERVER_MEMORY)) && printf %s "-Xmx${SERVER_MEMORY}M" ) -jar Server/HytaleServer.jar $( ((HYTALE_ALLOW_OP)) && printf %s "--allow-op" ) $( ((HYTALE_ACCEPT_EARLY_PLUGINS)) && printf %s "--accept-early-plugins" ) $( ((DISABLE_SENTRY)) && printf %s "--disable-sentry" ) --auth-mode ${HYTALE_AUTH_MODE} --assets Assets.zip --bind 0.0.0.0:${SERVER_PORT} > ./Server/training.log 2>&1 &
 	PID=$!
 
-	tail -f training.log | while read -r LINE; do
+	tail -f ./Server/training.log | while read -r LINE; do
 		echo "${LINE}"
 
 		if [[ "${LINE}" == *"Hytale Server Booted"* ]]; then
