@@ -28,7 +28,15 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	fi
 
 	if [[ "$NEEDS_DOWNLOAD" = true ]]; then
-		$HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -download-path HytaleServer.zip
+		if [[ -f "./Server/HytaleServer.jar" ]]; then
+			rm -rf ./Server/*
+			$HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -download-path HytaleServer.zip
+		elif [[ -f "./HytaleMount/Server/HytaleServer.jar" ]]; then
+			rm -rf ./HytaleMount/Server/*
+			$HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -download-path HytaleServer.zip
+		else
+			$HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -download-path HytaleServer.zip
+		fi
 	fi
 
 	if [[ -f "HytaleServer.zip" ]]; then
@@ -59,6 +67,30 @@ fi
 
 if [[ -f config.json && -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
 	jq ".MaxViewRadius = $HYTALE_MAX_VIEW_RADIUS" config.json > config.tmp.json && mv config.tmp.json config.json
+fi
+
+# Re-train the Ahead-of-Time cache, because the one provided by Hytale can't load due to an "timestamp has changed" error
+train_aot() {
+	java -XX:AOTCacheOutput=Server/HytaleServer_fixed.aot -Xms128M $( ((SERVER_MEMORY)) && printf %s "-Xmx${SERVER_MEMORY}M" ) -jar Server/HytaleServer.jar $( ((HYTALE_ALLOW_OP)) && printf %s "--allow-op" ) $( ((HYTALE_ACCEPT_EARLY_PLUGINS)) && printf %s "--accept-early-plugins" ) $( ((DISABLE_SENTRY)) && printf %s "--disable-sentry" ) --auth-mode ${HYTALE_AUTH_MODE} --assets Assets.zip --bind 0.0.0.0:${SERVER_PORT} > training.log 2>&1 &
+	PID=$!
+
+	tail -f training.log | while read -r LINE; do
+		echo "${LINE}"
+
+		if [[ "${LINE}" == *"Hytale Server Booted"* ]]; then
+			echo -e "Detected 'Hytale Server Booted' – sending stop command to finish training..."
+			echo "stop" > /proc/${PID}/fd/0
+			break
+		fi
+	done
+
+	wait ${PID}
+	echo -e "Training finished. AOT cache created: HytaleServer_fixed.aot"
+	rm -f training.log
+}
+
+if [ ! -f "./Server/HytaleServer_fixed.aot" ]; then
+    train_aot
 fi
 
 /java.sh $@
