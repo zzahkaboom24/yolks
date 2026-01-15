@@ -73,7 +73,11 @@ fi
 
 # Re-train the Ahead-of-Time cache, because the one provided by Hytale can't load due to an "timestamp has changed" error
 train_aot() {
-	java -XX:AOTCacheOutput=Server/HytaleServer_fixed.aot -Xms128M $( ((SERVER_MEMORY)) && printf %s "-Xmx${SERVER_MEMORY}M" ) -jar Server/HytaleServer.jar $( ((HYTALE_ALLOW_OP)) && printf %s "--allow-op" ) $( ((HYTALE_ACCEPT_EARLY_PLUGINS)) && printf %s "--accept-early-plugins" ) $( ((DISABLE_SENTRY)) && printf %s "--disable-sentry" ) --auth-mode ${HYTALE_AUTH_MODE} --assets Assets.zip --bind 0.0.0.0:${SERVER_PORT} > training.log 2>&1 &
+	if [ -f "./Server/HytaleServer.aot" ]; then
+		rm -f ./Server/HytaleServer.aot
+	fi
+	
+	java -XX:AOTCacheOutput=Server/HytaleServer.aot -Xms128M $( ((SERVER_MEMORY)) && printf %s "-Xmx${SERVER_MEMORY}M" ) -jar Server/HytaleServer.jar $( ((HYTALE_ALLOW_OP)) && printf %s "--allow-op" ) $( ((HYTALE_ACCEPT_EARLY_PLUGINS)) && printf %s "--accept-early-plugins" ) $( ((DISABLE_SENTRY)) && printf %s "--disable-sentry" ) --auth-mode ${HYTALE_AUTH_MODE} --assets Assets.zip --bind 0.0.0.0:${SERVER_PORT} > training.log 2>&1 &
 	PID=$!
 
 	tail -f training.log | while read -r LINE; do
@@ -87,11 +91,11 @@ train_aot() {
 	done
 
 	wait ${PID}
-	echo -e "Training finished. AOT cache created: HytaleServer_fixed.aot"
+	echo -e "Training finished. AOT cache created: HytaleServer.aot"
 	rm -f training.log
 }
 
-if [ ! -f "./Server/HytaleServer_fixed.aot" ]; then
+if [ ! -f "./Server/HytaleServer.aot" ]; then
     train_aot
 fi
 
