@@ -24,7 +24,5 @@ jobs:
         run: |
           git remote add testing "https://x-access-token:${GIT_PAT}@github.com/zzahkaboom24/yolks-testing.git" || true
           
-          git remote update --prune origin
-          
           git push testing --force master-sync:master-sync
           git push testing --force --tags
