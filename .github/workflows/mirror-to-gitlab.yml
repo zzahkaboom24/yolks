@@ -26,5 +26,5 @@ jobs:
           
           git remote update --prune origin
           
-          git push gitlab --force --prune --all
+          git push gitlab --force master-sync:master-sync
           git push gitlab --force --tags
