@@ -22,7 +22,7 @@ jobs:
         env:
           GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
         run: |
-          git remote add github "https://x-access-token:${{ secrets.GIT_PAT }}@github.com/zzahkaboom24/yolks-testing.git"
+          git remote add testing "https://x-access-token:${{ secrets.GIT_PAT }}@github.com/zzahkaboom24/yolks-testing.git"
           
           git remote update --prune origin
           
