@@ -26,4 +26,4 @@ jobs:
           
           git remote update --prune origin
           
-          git push --mirror gitlab
+          git push gitlab --force --prune --tags --all
