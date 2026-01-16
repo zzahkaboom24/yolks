@@ -1,4 +1,4 @@
-name: Mirror to GitLab
+name: Mirror to GitHub
 
 on:
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
         env:
           GIT_PAT: ${{ secrets.GIT_PAT }}
         run: |
-          git remote add testing "https://x-access-token:${{ secrets.GIT_PAT }}@github.com/zzahkaboom24/yolks-testing.git"
+          git remote add testing "https://x-access-token:${GIT_PAT}@github.com/zzahkaboom24/yolks-testing.git" || true
           
           git remote update --prune origin
           
