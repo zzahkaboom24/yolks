@@ -18,9 +18,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Mirror push to GitLab
+      - name: Mirror push to GitHub
         env:
-          GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
+          GIT_PAT: ${{ secrets.GIT_PAT }}
         run: |
           git remote add testing "https://x-access-token:${{ secrets.GIT_PAT }}@github.com/zzahkaboom24/yolks-testing.git"
           
