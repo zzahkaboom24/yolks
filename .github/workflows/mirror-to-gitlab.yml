@@ -22,9 +22,9 @@ jobs:
         env:
           GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
         run: |
-          git remote add gitlab "https://oauth2:${GITLAB_PAT}@gitlab.com/zzahkaboom24/yolks.git" || true
+          git remote add github "https://x-access-token:${{ secrets.GIT_PAT }}@github.com/zzahkaboom24/yolks-testing.git"
           
           git remote update --prune origin
           
-          git push gitlab --force master-sync:master-sync
-          git push gitlab --force --tags
+          git push testing --force master-sync:master-sync
+          git push testing --force --tags
