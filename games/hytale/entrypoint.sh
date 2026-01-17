@@ -22,7 +22,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 
 	# Default to downloading (unless we find matching version)
 	NEEDS_DOWNLOAD=true
-	if [[ -f "./Server/HytaleServer.jar" && -f config.json ]]; then
+	if [[ -f "./Server/HytaleServer.jar" || -f config.json ]]; then
 		CURRENT_VERSION=$(jq -r '.ServerVersion // ""' config.json)
 		if [[ "$CURRENT_VERSION" == "$LATEST_VERSION" ]]; then
 			NEEDS_DOWNLOAD=false
