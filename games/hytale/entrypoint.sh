@@ -16,8 +16,6 @@ if [[ -f "./HytaleMount/HytaleServer.zip" || -f "./HytaleMount/Assets.zip" ]]; t
 	HYTALE_MOUNT=true
 fi
 
-LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
-
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 
@@ -25,6 +23,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	NEEDS_DOWNLOAD=true
 	if [[ -f "./Server/HytaleServer.jar" && -f config.json ]]; then
 		CURRENT_VERSION=$(jq -r '.ServerVersion // ""' config.json)
+		LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 		if [[ "$CURRENT_VERSION" != "$LATEST_VERSION" ]]; then
 			NEEDS_DOWNLOAD=true
 		else
