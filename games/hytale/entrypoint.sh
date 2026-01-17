@@ -28,8 +28,6 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 		else
         	NEEDS_DOWNLOAD=false
 		fi
-	else
-		LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 	fi
 
 	if [[ "$NEEDS_DOWNLOAD" = true ]]; then
