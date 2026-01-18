@@ -105,6 +105,8 @@ train_aot() {
 			echo "$LINE"
 			if [[ "$LINE" == *"Hytale Server Booted"* ]]; then
 				echo -e "Detected 'Hytale Server Booted'..."
+				echo -e "Letting the training server run for 10 seconds before stopping..."
+				sleep 10
 				AOT_TRAINED=true
 				jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 				rm -f ./Server/training.log
@@ -121,8 +123,6 @@ train_aot() {
 			sleep 1
 			(( TIMEOUT_A-- ))
 		done
-
-		wait "$PID"
 		
 		echo -e "Training finished. Waiting for creation of AOT cache file..."
 		TIMEOUT_B=30
