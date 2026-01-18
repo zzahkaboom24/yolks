@@ -23,11 +23,10 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 		if [[ -f config.json ]]; then
 			CURRENT_VERSION=$(jq -r '.ServerVersion // ""' config.json)
 		else
-			CURRENT_VERSION="unknown"
+			CURRENT_VERSION=$(java -jar ./Server/HytaleServer.jar --version | awk '{print $2}' | sed 's/^v//')
 		fi
 		if [[ "$CURRENT_VERSION" != "$LATEST_VERSION" ]]; then
 			NEEDS_DOWNLOAD=true
-			jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 		else
         	NEEDS_DOWNLOAD=false
 		fi
@@ -60,8 +59,14 @@ else
 	fi
 fi
 
+if [[ "${USE_AOT_CACHE}" == "1" ]]; then
+	if [ ! -f config.json || "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
+    	train_aot
+	fi
+fi
+
 # Download the latest hytale-sourcequery plugin if enabled
-if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
+if [[ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]]; then
 	mkdir -p mods
 	echo -e "Downloading latest hytale-sourcequery plugin..."
 	LATEST_URL=$(curl -sSL https://api.github.com/repos/physgun-com/hytale-sourcequery/releases/latest \
@@ -109,11 +114,5 @@ train_aot() {
 	wait "$PID"
 	exec 3<&-
 }
-
-if [[ "${USE_AOT_CACHE}" == "1" ]]; then
-	if [ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
-    	train_aot
-	fi
-fi
 
 /java.sh $@
