@@ -9,8 +9,8 @@ if [[ -f "./HytaleMount/HytaleServer.zip" || -f "./HytaleMount/Assets.zip" ]]; t
 	HYTALE_MOUNT=true
 fi
 
-# Default to not downloading (unless version mismatch is found)
-NEEDS_DOWNLOAD=false
+# Default to downloading (unless we find matching version)
+NEEDS_DOWNLOAD=true
 
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
@@ -149,10 +149,9 @@ if [[ "${USE_AOT_CACHE}" == "1" ]]; then
 	else
 		export JAVA_TOOL_OPTIONS="-XX:+UseCompressedOops -XX:+UseCompressedClassPointers"
 	fi
-	if [[ ! -f config.json || "$NEEDS_DOWNLOAD" == true ]]; then
+	if [[ "$NEEDS_DOWNLOAD" == true || ! -f config.json ]]; then
 		train_aot
-	fi
-	if [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
+	elif [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
 		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
 			train_aot
 		fi
