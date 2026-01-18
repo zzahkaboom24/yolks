@@ -114,11 +114,11 @@ train_aot() {
 	echo -e "Training finished. Waiting for creation of AOT cache file..."
 	# On a freshly set up server, I seem to get stuck on "Training finished. Waiting for creation of AOT cache file..." and I can't seem to fix it yet
 	TIMEOUT=30
-    while [[ ! -f "./Server/HytaleServer.aot" ]] && (( TIMER > 0 )); do
+    while [[ ! -f "./Server/HytaleServer.aot" ]] && (( TIMEOUT > 0 )); do
         sleep 1
         (( TIMER-- ))
     done
-	if [[ ! -f "./Server/HytaleServer.aot" ]]; then
+	if [[ -f "./Server/HytaleServer.aot" ]]; then
         echo -e "AOT file not found after 30s."
 	else
 		echo -e "AOT cache created: HytaleServer.aot. Restarting server..."
