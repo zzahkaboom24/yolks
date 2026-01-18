@@ -105,6 +105,8 @@ train_aot() {
 			echo "$LINE"
 			if [[ "$LINE" == *"Hytale Server Booted"* ]]; then
 				echo -e "Detected 'Hytale Server Booted'..."
+				AOT_TRAINED=true
+				jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 				rm -f ./Server/training.log
 				break
 			fi
