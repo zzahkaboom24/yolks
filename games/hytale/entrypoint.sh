@@ -8,7 +8,7 @@ HYTALE_MOUNT=false
 if [[ -f "./HytaleMount/HytaleServer.zip" || -f "./HytaleMount/Assets.zip" ]]; then
 	HYTALE_MOUNT=true
 fi
-CURRENT_VERSION=$(java -jar ./Server/HytaleServer.jar --version | awk '{print $2}' | sed 's/^v//')
+
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	if [[ "$(uname -m)" = "aarch64" ]]; then
@@ -20,9 +20,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	NEEDS_DOWNLOAD=true
 	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 	if [[ -f "./Server/HytaleServer.jar" ]]; then
-		if [[ ! -f config.json ]]; then
-			CURRENT_VERSION=$(java -jar ./Server/HytaleServer.jar --version | awk '{print $2}' | sed 's/^v//')
-		elif [[ -f config.json ]]; then
+		if [[ -f config.json ]]; then
 			CURRENT_VERSION=$(jq -r '.ServerVersion // ""' config.json)
 		else
 			CURRENT_VERSION="unknown"
