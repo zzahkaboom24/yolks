@@ -39,12 +39,6 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 		unzip -o HytaleServer.zip -d .
 		rm -f HytaleServer.zip
 	fi
-	
-	if [[ -f config.json ]]; then
-		LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
-		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
-		jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
-	fi
 fi
 
 if [[ "$HYTALE_MOUNT" = true ]]; then
@@ -73,6 +67,13 @@ if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
 	else
 		echo -e "Warning: Could not find hytale-sourcequery plugin download URL."
 	fi
+fi
+
+if [[ -f config.json ]]; then
+	if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
+		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
+	fi
+	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 
 AOT_TRAINED=false
