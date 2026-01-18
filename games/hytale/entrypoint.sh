@@ -133,9 +133,9 @@ train_aot() {
     	fi
 	) &
 
-	MAX_HEAP=32768
+	MAX_HEAP=31744
 	if (( SERVER_MEMORY > MAX_HEAP )); then
-		MAX_HEAP=32768
+		MAX_HEAP=31744
 	else
 		MAX_HEAP=$SERVER_MEMORY
 	fi
@@ -144,7 +144,7 @@ train_aot() {
 }
 
 if [[ "${USE_AOT_CACHE}" == "1" ]]; then
-	if (( SERVER_MEMORY >= 32768 )); then
+	if (( SERVER_MEMORY > 31744 )); then
 		export JAVA_TOOL_OPTIONS="-XX:-UseCompressedOops -XX:-UseCompressedClassPointers"
 	else
 		export JAVA_TOOL_OPTIONS="-XX:+UseCompressedOops -XX:+UseCompressedClassPointers"
