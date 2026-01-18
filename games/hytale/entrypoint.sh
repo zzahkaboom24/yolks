@@ -118,7 +118,7 @@ train_aot() {
 }
 
 if [[ "${USE_AOT_CACHE}" == "1" ]]; then
-	if [ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
+	if [ ! -f config.json || "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
     	train_aot
 	fi
 fi
