@@ -112,15 +112,22 @@ train_aot() {
 
 	kill -TERM "$PID"
 	echo -e "Training finished. Waiting for creation of AOT cache file..."
-	while [[ ! -f "./Server/HytaleServer.aot" ]]; do
-    	sleep 1
-	done
-	echo -e "AOT cache created: HytaleServer.aot. Restarting server..."
-	echo -e "The server can take up to 2 minutes or more to boot back up!"
-	echo -e "This only needs to be done when the server is freshly set up or after each update,"
-	echo -e "while Java Ahead-of-Time cache is enabled!"
-	echo -e "If neither of these conditions are met, or Java Ahead-of-Time cache is disabled,"
-	echo -e "boot times will be normal in these cases too!"
+	# On a freshly set up server, I seem to get stuck on "Training finished. Waiting for creation of AOT cache file..." and I can't seem to fix it yet
+	TIMEOUT=30
+    while [[ ! -f "./Server/HytaleServer.aot" ]] && (( TIMER > 0 )); do
+        sleep 1
+        (( TIMER-- ))
+    done
+	if [[ ! -f "./Server/HytaleServer.aot" ]]; then
+        echo -e "AOT file not found after 30s."
+	else
+		echo -e "AOT cache created: HytaleServer.aot. Restarting server..."
+		echo -e "The server can take up to 2 minutes or more to boot back up!"
+		echo -e "This only needs to be done when the server is freshly set up or after each update,"
+		echo -e "while Java Ahead-of-Time cache is enabled!"
+		echo -e "If neither of these conditions are met, or Java Ahead-of-Time cache is disabled,"
+		echo -e "boot times will be normal in these cases too!"
+    fi
 	wait "$PID"
 }
 
