@@ -127,8 +127,9 @@ train_aot() {
 		echo -e "while Java Ahead-of-Time cache is enabled!"
 		echo -e "If neither of these conditions are met, or Java Ahead-of-Time cache is disabled,"
 		echo -e "boot times will be normal in these cases too!"
+		wait "$PID"
     fi
-	wait "$PID"
+	
 }
 
 if [[ "${USE_AOT_CACHE}" == "1" ]]; then
