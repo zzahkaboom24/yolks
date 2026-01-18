@@ -78,15 +78,11 @@ if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
 fi
 
 if [[ -f config.json ]]; then
+	if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
+		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
+	fi
 	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
-else
-	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
-	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
-fi
-
-if [[ -f config.json && -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
-	jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 
 AOT_TRAINED=false
