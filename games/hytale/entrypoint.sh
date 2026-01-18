@@ -93,24 +93,24 @@ train_aot() {
 	if [[ -f "./Server/HytaleServer.aot" ]]; then
 		rm -f ./Server/HytaleServer.aot
 	fi
+
+	: > ./Server/training.log
 	
-	exec 3< <(
-		java -XX:AOTCacheOutput=Server/HytaleServer.aot -Xms128M $( ((SERVER_MEMORY)) && printf %s "-Xmx${SERVER_MEMORY}M" ) -jar Server/HytaleServer.jar $( ((HYTALE_ALLOW_OP)) && printf %s "--allow-op" ) $( ((HYTALE_ACCEPT_EARLY_PLUGINS)) && printf %s "--accept-early-plugins" ) $( ((DISABLE_SENTRY)) && printf %s "--disable-sentry" ) --auth-mode "${HYTALE_AUTH_MODE}" --assets Assets.zip --bind "0.0.0.0:${SERVER_PORT}" 2>&1
-	)
+	java -XX:AOTCacheOutput=Server/HytaleServer.aot -Xms128M $( ((SERVER_MEMORY)) && printf %s "-Xmx${SERVER_MEMORY}M" ) -jar Server/HytaleServer.jar $( ((HYTALE_ALLOW_OP)) && printf %s "--allow-op" ) $( ((HYTALE_ACCEPT_EARLY_PLUGINS)) && printf %s "--accept-early-plugins" ) $( ((DISABLE_SENTRY)) && printf %s "--disable-sentry" ) --auth-mode "${HYTALE_AUTH_MODE}" --assets Assets.zip --bind "0.0.0.0:${SERVER_PORT}" > ./Server/training.log 2>&1 &
 	PID=$!
 
-	while IFS= read -r LINE <&3; do
+	tail -f ./Server/training.log | while read -r LINE; do
 		echo "$LINE"
 		if [[ "$LINE" == *"Hytale Server Booted"* ]]; then
 			echo -e "Detected 'Hytale Server Booted'..."
 			AOT_TRAINED=true
 			jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
+			rm -f ./Server/training.log
 			break
 		fi
 	done
 
 	kill -TERM "$PID"
-	wait "$PID" || true
 	echo -e "Training finished. Waiting for creation of AOT cache file..."
 	while [[ ! -f "./Server/HytaleServer.aot" ]]; do
     	sleep 1
@@ -121,7 +121,7 @@ train_aot() {
 	echo -e "while Java Ahead-of-Time cache is enabled!"
 	echo -e "If neither of these conditions are met, or Java Ahead-of-Time cache is disabled,"
 	echo -e "boot times will be normal in these cases too!"
-	exec 3<&-
+	wait "$PID"
 }
 
 if [[ "${USE_AOT_CACHE}" == "1" ]]; then
