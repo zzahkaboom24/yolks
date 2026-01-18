@@ -102,7 +102,7 @@ train_aot() {
 		rm -f ./Server/training.log
 	fi
 
-	: > ./Server/training.log
+	touch ./Server/training.log
 
 	(
 		tail -f ./Server/training.log | while read -r LINE; do
