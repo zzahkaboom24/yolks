@@ -59,12 +59,6 @@ else
 	fi
 fi
 
-if [[ "${USE_AOT_CACHE}" == "1" ]]; then
-	if [ ! -f config.json || "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
-    	train_aot
-	fi
-fi
-
 # Download the latest hytale-sourcequery plugin if enabled
 if [[ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]]; then
 	mkdir -p mods
@@ -81,6 +75,12 @@ fi
 
 if [[ -f config.json && -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
 	jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
+fi
+
+if [[ "${USE_AOT_CACHE}" == "1" ]]; then
+	if [ ! -f config.json || "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
+    	train_aot
+	fi
 fi
 
 AOT_TRAINED=false
