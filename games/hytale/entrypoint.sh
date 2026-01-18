@@ -9,15 +9,17 @@ if [[ -f "./HytaleMount/HytaleServer.zip" || -f "./HytaleMount/Assets.zip" ]]; t
 	HYTALE_MOUNT=true
 fi
 
+# Default to downloading (unless we find matching version)
+NEEDS_DOWNLOAD=true
+
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
-	if [[ "$(uname -m)" = "aarch64" ]]; then
+	if [[ "$(uname -m)" == "aarch64" ]]; then
 		HYTALE_DOWNLOADER="qemu-x86_64-static ./hytale-downloader/hytale-downloader-linux"
 	else
 		HYTALE_DOWNLOADER="./hytale-downloader/hytale-downloader-linux"
 	fi
-	# Default to downloading (unless we find matching version)
-	NEEDS_DOWNLOAD=true
+	
 	if [[ -f "./Server/HytaleServer.jar" ]]; then
 	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 		if [[ -f config.json ]]; then
@@ -36,7 +38,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 		fi
 	fi
 
-	if [[ "$NEEDS_DOWNLOAD" = true ]]; then
+	if [[ "$NEEDS_DOWNLOAD" == true ]]; then
 		if [[ -f "./Server/HytaleServer.jar" ]]; then
 			rm -rf ./Server/*
 		fi
@@ -49,7 +51,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	fi
 fi
 
-if [[ "$HYTALE_MOUNT" = true ]]; then
+if [[ "$HYTALE_MOUNT" == true ]]; then
 	if [[ -f "HytaleMount/HytaleServer.zip" ]]; then
 		unzip -o HytaleMount/HytaleServer.zip -d .
 	elif [[ -f "HytaleMount/Assets.zip" ]]; then
@@ -64,7 +66,7 @@ else
 fi
 
 # Download the latest hytale-sourcequery plugin if enabled
-if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
+if [[ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]]; then
 	mkdir -p mods
 	echo -e "Downloading latest hytale-sourcequery plugin..."
 	LATEST_URL=$(curl -sSL https://api.github.com/repos/physgun-com/hytale-sourcequery/releases/latest \
@@ -118,8 +120,12 @@ train_aot() {
 }
 
 if [[ "${USE_AOT_CACHE}" == "1" ]]; then
-	if [ ! -f config.json || "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
-    	train_aot
+	if [[ "$NEEDS_DOWNLOAD" == true || ! -f config.json ]]; then
+		train_aot
+	elif [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
+		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
+			train_aot
+		fi
 	fi
 fi
 
