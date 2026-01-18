@@ -144,7 +144,7 @@ train_aot() {
 }
 
 if [[ "${USE_AOT_CACHE}" == "1" ]]; then
-	if (( SERVER_MEMORY > 32768 )); then
+	if (( SERVER_MEMORY >= 32768 )); then
 		export JAVA_TOOL_OPTIONS="-XX:-UseCompressedOops -XX:-UseCompressedClassPointers"
 	else
 		export JAVA_TOOL_OPTIONS="-XX:+UseCompressedOops -XX:+UseCompressedClassPointers"
