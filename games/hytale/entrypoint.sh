@@ -73,16 +73,19 @@ if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
 	fi
 fi
 
-if [[ -f config.json && -n "$LATEST_VERSION" ]]; then
+if [[ -f config.json ]]; then
+	CURRENT_VERSION=$(jq -r '.ServerVersion // ""' config.json)
+	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
+	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
+else
+	CURRENT_VERSION=$(java -jar ./Server/HytaleServer.jar --version | awk '{print $2}' | sed 's/^v//')
+	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 
 if [[ -f config.json && -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
 	jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
-
-LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
-jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 
 AOT_TRAINED=false
 # Re-train the Ahead-of-Time cache, because the one provided by Hytale can't load due to an "timestamp has changed" error
