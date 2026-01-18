@@ -10,6 +10,7 @@ if [[ -f "./HytaleMount/HytaleServer.zip" || -f "./HytaleMount/Assets.zip" ]]; t
 fi
 
 # Default to downloading (unless we find matching version)
+# For the Ahead-of-Time cache it's false (unless we find matching version)
 NEEDS_DOWNLOAD=true
 AOT_UPDATE=false
 
