@@ -4,12 +4,6 @@ set -x
 
 cd /home/container
 
-if [[ "$(uname -m)" = "aarch64" ]]; then
-	HYTALE_DOWNLOADER="qemu-x86_64-static ./hytale-downloader/hytale-downloader-linux"
-else
-	HYTALE_DOWNLOADER="./hytale-downloader/hytale-downloader-linux"
-fi
-
 # Default to false; We don't assume people to be providing the files themselves
 HYTALE_MOUNT=false
 if [[ -f "./HytaleMount/HytaleServer.zip" || -f "./HytaleMount/Assets.zip" ]]; then
@@ -18,6 +12,11 @@ fi
 
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
+	if [[ "$(uname -m)" = "aarch64" ]]; then
+		HYTALE_DOWNLOADER="qemu-x86_64-static ./hytale-downloader/hytale-downloader-linux"
+	else
+		HYTALE_DOWNLOADER="./hytale-downloader/hytale-downloader-linux"
+	fi
 	# Default to downloading (unless we find matching version)
 	NEEDS_DOWNLOAD=true
 	if [[ -f "./Server/HytaleServer.jar" && -f config.json ]]; then
@@ -31,7 +30,6 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	fi
 
 	if [[ "$NEEDS_DOWNLOAD" = true ]]; then
-		LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 		if [[ -f "./Server/HytaleServer.jar" ]]; then
 			rm -rf ./Server/*
 		fi
