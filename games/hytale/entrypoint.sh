@@ -20,7 +20,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	NEEDS_DOWNLOAD=true
 	if [[ -f "./Server/HytaleServer.jar" ]]; then
 	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
-		if [[ -f config.json ]];
+		if [[ -f config.json ]]; then
 			CURRENT_VERSION=$(jq -r '.ServerVersion // ""' config.json)
 		else
 			CURRENT_VERSION=$(java -jar ./Server/HytaleServer.jar --version | awk '{print $2}' | sed 's/^v//')
