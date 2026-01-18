@@ -78,11 +78,9 @@ if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
 fi
 
 if [[ -f config.json ]]; then
-	CURRENT_VERSION=$(jq -r '.ServerVersion // ""' config.json)
 	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 else
-	CURRENT_VERSION=$(java -jar ./Server/HytaleServer.jar --version | awk '{print $2}' | sed 's/^v//')
 	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
