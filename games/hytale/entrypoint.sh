@@ -73,10 +73,8 @@ if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
 	fi
 fi
 
-if [[ ! -f config.json ]]; then
-	if [[ -n "$LATEST_VERSION" || -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
-		echo "{}" > "config.json"
-	fi
+if [[ -f config.json && -n "$LATEST_VERSION" ]]; then
+	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 
 if [[ -f config.json && -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
