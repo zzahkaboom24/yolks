@@ -110,7 +110,7 @@ train_aot() {
 		fi
 	done
 
-	kill -TERM "$PID"
+	kill -INT "$PID"
 	echo -e "Training finished. Waiting for creation of AOT cache file..."
 	# On a freshly set up server, I seem to get stuck on "Training finished. Waiting for creation of AOT cache file..." and I can't seem to fix it yet
 	TIMEOUT=30
