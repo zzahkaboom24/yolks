@@ -115,6 +115,11 @@ train_aot() {
     	sleep 1
 	done
 	echo -e "AOT cache created: HytaleServer.aot. Restarting server..."
+	echo -e "The server can take up to 2 minutes or more to boot back up!"
+	echo -e "This only needs to be done when the server is freshly set up or after each update,"
+	echo -e "while Java Ahead-of-Time cache is enabled!"
+	echo -e "If neither of these conditions are met, or Java Ahead-of-Time cache is disabled,"
+	echo -e "boot times will be normal in these cases too!"
 	wait "$PID"
 	exec 3<&-
 }
