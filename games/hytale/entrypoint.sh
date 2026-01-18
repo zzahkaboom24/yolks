@@ -27,6 +27,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 		fi
 		if [[ "$CURRENT_VERSION" != "$LATEST_VERSION" ]]; then
 			NEEDS_DOWNLOAD=true
+			jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 		else
         	NEEDS_DOWNLOAD=false
 		fi
