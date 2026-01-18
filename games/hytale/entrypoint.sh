@@ -10,9 +10,7 @@ if [[ -f "./HytaleMount/HytaleServer.zip" || -f "./HytaleMount/Assets.zip" ]]; t
 fi
 
 # Default to downloading (unless we find matching version)
-# For the Ahead-of-Time cache it's false (unless we find matching version)
 NEEDS_DOWNLOAD=true
-AOT_UPDATE=false
 
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
@@ -35,10 +33,8 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 		fi
 		if [[ "$CURRENT_VERSION" != "$LATEST_VERSION" ]]; then
 			NEEDS_DOWNLOAD=true
-			AOT_UPDATE=true
 		else
         	NEEDS_DOWNLOAD=false
-			AOT_UPDATE=false
 		fi
 	fi
 
@@ -153,10 +149,14 @@ if [[ "${USE_AOT_CACHE}" == "1" ]]; then
 	else
 		export JAVA_TOOL_OPTIONS="-XX:+UseCompressedOops -XX:+UseCompressedClassPointers"
 	fi
-	if [[ "$AOT_UPDATE" == true || ! -f config.json ]]; then
-		train_aot
-	elif [[ -f config.json && "$AOT_UPDATE" == false ]]; then
+	if [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
 		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
+			train_aot
+		fi
+	elif [[ ! -f config.json ]]; then
+		train_aot
+	elif [[ "$NEEDS_DOWNLOAD" == true ]]; then
+		if [[ ! -f auth.enc ]]; then
 			train_aot
 		fi
 	fi
