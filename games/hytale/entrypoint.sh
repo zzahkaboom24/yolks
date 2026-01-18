@@ -149,14 +149,23 @@ if [[ "${USE_AOT_CACHE}" == "1" ]]; then
 	else
 		export JAVA_TOOL_OPTIONS="-XX:+UseCompressedOops -XX:+UseCompressedClassPointers"
 	fi
-	if [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
-		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
-			train_aot
-		fi
-	elif [[ ! -f config.json ]]; then
+	if [[ ! -f config.json ]]; then
 		train_aot
-	elif [[ "$NEEDS_DOWNLOAD" == true ]]; then
-		if [[ ! -f auth.enc ]]; then
+	fi
+	if [[ ! -f auth.enc ]]; then
+		if [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
+			if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
+				train_aot
+			fi
+		elif [[ "$NEEDS_DOWNLOAD" == true ]]; then
+				train_aot
+		fi
+	else
+		if [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
+			if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
+				train_aot
+			fi
+		elif [[ "$NEEDS_DOWNLOAD" == true ]]; then
 			train_aot
 		fi
 	fi
