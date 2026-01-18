@@ -103,14 +103,14 @@ train_aot() {
 		echo "$LINE"
 		if [[ "$LINE" == *"Hytale Server Booted"* ]]; then
 			echo -e "Detected 'Hytale Server Booted'..."
-			AOT_TRAINED=true
-			jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 			break
 		fi
 	done
 
 	kill -TERM "$PID"
 	echo -e "Training finished. Waiting for creation of AOT cache file..."
+	AOT_TRAINED=true
+	jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 	while [[ ! -f "./Server/HytaleServer.aot" ]]; do
     	sleep 1
 	done
