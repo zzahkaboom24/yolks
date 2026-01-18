@@ -105,15 +105,15 @@ train_aot() {
 			echo -e "Detected 'Hytale Server Booted'..."
 			AOT_TRAINED=true
 			jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
-			echo -e "Training finished. Waiting for creation of AOT cache file..."
-			while [[ ! -f "./Server/HytaleServer.aot" ]]; do
-    			sleep 1
-			done
 			break
 		fi
 	done
 
 	kill -TERM "$PID"
+	echo -e "Training finished. Waiting for creation of AOT cache file..."
+	while [[ ! -f "./Server/HytaleServer.aot" ]]; do
+    	sleep 1
+	done
 	echo -e "AOT cache created: HytaleServer.aot. Restarting server..."
 	echo -e "The server can take up to 2 minutes or more to boot back up!"
 	echo -e "This only needs to be done when the server is freshly set up or after each update,"
