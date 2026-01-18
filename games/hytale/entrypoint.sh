@@ -115,8 +115,8 @@ train_aot() {
 	AOT_TRAINED=true
 	jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 	echo -e "AOT cache created: HytaleServer.aot. Restarting server..."
-	wait "$PID"
 	exec 3<&-
+	wait "$PID"
 }
 
 if [[ "${USE_AOT_CACHE}" == "1" ]]; then
