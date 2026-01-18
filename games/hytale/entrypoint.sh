@@ -18,9 +18,9 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	fi
 	# Default to downloading (unless we find matching version)
 	NEEDS_DOWNLOAD=true
-	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
 	if [[ -f "./Server/HytaleServer.jar" ]]; then
-		if [[ -f config.json ]]; then
+	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
+		if [[ -f config.json ]];
 			CURRENT_VERSION=$(jq -r '.ServerVersion // ""' config.json)
 		else
 			CURRENT_VERSION=$(java -jar ./Server/HytaleServer.jar --version | awk '{print $2}' | sed 's/^v//')
@@ -60,7 +60,7 @@ else
 fi
 
 # Download the latest hytale-sourcequery plugin if enabled
-if [[ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]]; then
+if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
 	mkdir -p mods
 	echo -e "Downloading latest hytale-sourcequery plugin..."
 	LATEST_URL=$(curl -sSL https://api.github.com/repos/physgun-com/hytale-sourcequery/releases/latest \
@@ -73,15 +73,18 @@ if [[ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]]; then
 	fi
 fi
 
+if [[ ! -f config.json ]]; then
+	if [[ -n "$LATEST_VERSION" || -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
+		echo "{}" > "config.json"
+	fi
+fi
+
 if [[ -f config.json && -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
 	jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 
-if [[ "${USE_AOT_CACHE}" == "1" ]]; then
-	if [ ! -f config.json || "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
-    	train_aot
-	fi
-fi
+LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
+jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 
 AOT_TRAINED=false
 # Re-train the Ahead-of-Time cache, because the one provided by Hytale can't load due to an "timestamp has changed" error
@@ -114,5 +117,11 @@ train_aot() {
 	wait "$PID"
 	exec 3<&-
 }
+
+if [[ "${USE_AOT_CACHE}" == "1" ]]; then
+	if [ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]; then
+    	train_aot
+	fi
+fi
 
 /java.sh $@
