@@ -56,9 +56,7 @@ else
 fi
 
 if [[ -f config.json ]]; then
-	if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
-		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
-	fi
+	jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
 	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 
