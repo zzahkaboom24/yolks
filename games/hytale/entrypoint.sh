@@ -39,6 +39,12 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 		unzip -o HytaleServer.zip -d .
 		rm -f HytaleServer.zip
 	fi
+	
+	if [[ -f config.json ]]; then
+		LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
+		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
+		jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
+	fi
 fi
 
 if [[ "$HYTALE_MOUNT" = true ]]; then
@@ -53,12 +59,6 @@ else
 	elif [[ -f "HytaleServer.zip" ]]; then
 		unzip -o HytaleServer.zip -d .
 	fi
-fi
-
-if [[ -f config.json ]]; then
-	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
-	jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
-	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 
 # Download the latest hytale-sourcequery plugin if enabled
