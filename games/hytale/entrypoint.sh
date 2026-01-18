@@ -9,6 +9,8 @@ if [[ -f "./HytaleMount/HytaleServer.zip" || -f "./HytaleMount/Assets.zip" ]]; t
 	HYTALE_MOUNT=true
 fi
 
+LATEST_VERSION=""
+CURRENT_VERSION=""
 # Default to downloading (unless we find matching version)
 NEEDS_DOWNLOAD=true
 
@@ -149,9 +151,9 @@ if [[ "${USE_AOT_CACHE}" == "1" ]]; then
 	else
 		export JAVA_TOOL_OPTIONS="-XX:+UseCompressedOops -XX:+UseCompressedClassPointers"
 	fi
-	if [[ "$NEEDS_DOWNLOAD" == true || ! -f config.json ]]; then
+	if [[ "$CURRENT_VERSION" != "$LATEST_VERSION" || ! -f config.json ]]; then
 		train_aot
-	elif [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
+	elif [[ -f config.json && "$CURRENT_VERSION" == "$LATEST_VERSION" ]]; then
 		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
 			train_aot
 		fi
