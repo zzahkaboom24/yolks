@@ -69,12 +69,17 @@ if [ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]; then
 	fi
 fi
 
-if [[ -f config.json ]]; then
-	if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
-		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
+if [[ ! -f config.json ]]; then
+	if [[ -n "$LATEST_VERSION" || -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
+		echo "{}" > "config.json"
 	fi
-	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
+
+if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
+	jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
+fi
+
+jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 
 AOT_TRAINED=false
 # Re-train the Ahead-of-Time cache, because the one provided by Hytale can't load due to an "timestamp has changed" error
