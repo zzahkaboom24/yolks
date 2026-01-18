@@ -62,6 +62,8 @@ if [[ -f config.json ]]; then
 	fi
 	if [[ -n "$LATEST_VERSION" ]]; then
 		jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
+	else
+		jq '.ServerVersion = "unknown"' config.json > config.tmp.json && mv config.tmp.json config.json
 	fi
 fi
 
