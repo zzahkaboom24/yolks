@@ -116,7 +116,7 @@ train_aot() {
 	TIMEOUT=30
     while [[ ! -f "./Server/HytaleServer.aot" ]] && (( TIMEOUT > 0 )); do
         sleep 1
-        (( TIMER-- ))
+        (( TIMEOUT-- ))
     done
 	if [[ -f "./Server/HytaleServer.aot" ]]; then
         echo -e "AOT file not found after 30s."
