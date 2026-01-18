@@ -118,7 +118,7 @@ train_aot() {
         sleep 1
         (( TIMEOUT-- ))
     done
-	if [[ -f "./Server/HytaleServer.aot" ]]; then
+	if [[ ! -f "./Server/HytaleServer.aot" ]]; then
         echo -e "AOT file not found after 30s."
 	else
 		echo -e "AOT cache created: HytaleServer.aot. Restarting server..."
