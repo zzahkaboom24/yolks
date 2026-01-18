@@ -115,13 +115,14 @@ train_aot() {
 		PID=$(pgrep -f "./Server/HytaleServer.jar")
 		echo -e "Triggering shutdown to generate AOT cache..."
 		kill -TERM "$PID"
-		wait "$PID"
 
 		TIMEOUT_A=30
 		while [[ ! -f "./Server/HytaleServer.aot.config" && (( TIMEOUT_A > 0 ))]]; do
 			sleep 1
 			(( TIMEOUT_A-- ))
 		done
+
+		wait "$PID"
 		
 		echo -e "Training finished. Waiting for creation of AOT cache file..."
 		TIMEOUT_B=30
