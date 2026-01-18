@@ -109,11 +109,11 @@ train_aot() {
 
 	kill -TERM "$PID"
 	echo -e "Training finished. Waiting for creation of AOT cache file..."
-	AOT_TRAINED=true
-	jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 	while [[ ! -f "./Server/HytaleServer.aot" ]]; do
     	sleep 1
 	done
+	AOT_TRAINED=true
+	jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 	echo -e "AOT cache created: HytaleServer.aot. Restarting server..."
 	wait "$PID"
 	exec 3<&-
