@@ -146,7 +146,7 @@ if [[ "${USE_AOT_CACHE}" == "1" ]]; then
 	else
 		export JAVA_TOOL_OPTIONS="-XX:+UseCompressedOops -XX:+UseCompressedClassPointers"
 	fi
-	if [[ ! -f config.json || "$NEEDS_DOWNLOAD" == true ]]; then
+	if [[ ! -f config.json || ! -f ./Server/HytaleServer.aot || "$NEEDS_DOWNLOAD" == true ]]; then
 		train_aot
 	elif [[ -f config.json && "$NEEDS_DOWNLOAD" == false ]]; then
 		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
@@ -155,10 +155,23 @@ if [[ "${USE_AOT_CACHE}" == "1" ]]; then
 	fi
 fi
 
-if [[ -f ./Server/training.log && -f config.json ]]; then
-	AOT_TRAINED=true
-	jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
-	rm -f ./Server/training.log
+if [[ -f config.json && -f config.json.bak ]]; then
+	if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
+		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json.bak)" == "true" ]]; then
+			if [[ -f ./Server/training.log ]]; then
+				AOT_TRAINED=true
+				jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
+				rm -f ./Server/training.log
+			else
+				AOT_TRAINED=true
+				jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
+			fi
+		fi
+	fi
+elif [[ -f ./Server/training.log && -f config.json ]]; then
+		AOT_TRAINED=true
+		jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
+	fi
 fi
 
 /java.sh $@
