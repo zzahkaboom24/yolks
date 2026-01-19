@@ -178,7 +178,6 @@ elif [[ -f ./Server/training.log && -f config.json ]]; then
 		AOT_TRAINED=true
 		jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 		rm -f ./Server/training.log
-	fi
 fi
 	
 /java.sh $@
