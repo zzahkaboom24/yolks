@@ -81,6 +81,31 @@ if [[ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]]; then
 	fi
 fi
 
+# This section restores custom values in the config.json
+# Custom values are lost if an user runs /auth persistence Memory/Encrypted
+if [[ -f config.json && -f config.json.bak ]]; then
+	# Restore AheadOfTimeCacheTrained
+	if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
+		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json.bak)" == "true" ]]; then
+			if [[ -f ./Server/training.log ]]; then
+				AOT_TRAINED=true
+				jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
+				rm -f ./Server/training.log
+			else
+				AOT_TRAINED=true
+				jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
+			fi
+		fi
+	fi
+	# Restore ServerVersion
+	if [[ "$(jq -r '.ServerVersion // ""' config.json)" == "" ]]; then
+		if [[ "$(jq -r '.ServerVersion // ""' config.json.bak)" != "" ]]; then
+			BACKUPPED_VERSION=$(jq -r '.ServerVersion // ""' config.json.bak)
+			jq --arg version "$BACKUPPED_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
+		fi
+	fi
+fi
+
 AOT_TRAINED=false
 # Re-train the Ahead-of-Time cache, because the one provided by Hytale can't load due to an "timestamp has changed" error
 train_aot() {
@@ -147,28 +172,7 @@ if [[ "${USE_AOT_CACHE}" == "1" ]]; then
 	fi
 fi
 
-if [[ -f config.json && -f config.json.bak ]]; then
-	# Restore AheadOfTimeCacheTrained
-	if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
-		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json.bak)" == "true" ]]; then
-			if [[ -f ./Server/training.log ]]; then
-				AOT_TRAINED=true
-				jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
-				rm -f ./Server/training.log
-			else
-				AOT_TRAINED=true
-				jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
-			fi
-		fi
-	fi
-	# Restore ServerVersion
-	if [[ "$(jq -r '.ServerVersion // ""' config.json)" == "" ]]; then
-		if [[ "$(jq -r '.ServerVersion // ""' config.json.bak)" != "" ]]; then
-			BACKUPPED_VERSION=$(jq -r '.ServerVersion // ""' config.json.bak)
-			jq --arg version "$BACKUPPED_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
-		fi
-	fi
-elif [[ -f ./Server/training.log && -f config.json ]]; then
+if [[ -f ./Server/training.log && -f config.json ]]; then
 		AOT_TRAINED=true
 		jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 		rm -f ./Server/training.log
