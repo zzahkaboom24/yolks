@@ -81,12 +81,6 @@ if [[ "${INSTALL_SOURCEQUERY_PLUGIN}" == "1" ]]; then
 	fi
 fi
 
-if [[ -f config.json ]]; then
-	if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
-		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
-	fi
-fi
-
 AOT_TRAINED=false
 # Re-train the Ahead-of-Time cache, because the one provided by Hytale can't load due to an "timestamp has changed" error
 train_aot() {
@@ -178,6 +172,14 @@ elif [[ -f ./Server/training.log && -f config.json ]]; then
 		AOT_TRAINED=true
 		jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 		rm -f ./Server/training.log
+fi
+
+if [[ -f config.json ]]; then
+	if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
+		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
+	fi
+	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
+	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 	
 /java.sh $@
