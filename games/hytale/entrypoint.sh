@@ -85,8 +85,6 @@ if [[ -f config.json ]]; then
 	if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
 		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
 	fi
-	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
-	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 
 AOT_TRAINED=false
@@ -156,6 +154,7 @@ if [[ "${USE_AOT_CACHE}" == "1" ]]; then
 fi
 
 if [[ -f config.json && -f config.json.bak ]]; then
+	# Restore AheadOfTimeCacheTrained
 	if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json)" != "true" ]]; then
 		if [[ "$(jq -r '.AheadOfTimeCacheTrained // ""' config.json.bak)" == "true" ]]; then
 			if [[ -f ./Server/training.log ]]; then
@@ -168,10 +167,17 @@ if [[ -f config.json && -f config.json.bak ]]; then
 			fi
 		fi
 	fi
+	# Restore ServerVersion
+	if [[ "$(jq -r '.ServerVersion // ""' config.json)" == "" ]]; then
+		if [[ "$(jq -r '.ServerVersion // ""' config.json.bak)" != "" ]]; then
+			BACKUPPED_VERSION=$(jq -r '.ServerVersion // ""' config.json.bak)
+			jq --arg version "$BACKUPPED_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
+		fi
+	fi
 elif [[ -f ./Server/training.log && -f config.json ]]; then
 		AOT_TRAINED=true
 		jq --argjson trainaot "$AOT_TRAINED" '.AheadOfTimeCacheTrained = $trainaot' config.json > config.tmp.json && mv config.tmp.json config.json
 	fi
 fi
-
+	
 /java.sh $@
