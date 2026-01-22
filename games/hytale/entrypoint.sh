@@ -21,7 +21,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	fi
 	
 	if [[ -f "./Server/HytaleServer.jar" ]]; then
-	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
+	LATEST_VERSION=$($HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -print-version)
 		if [[ -f config.json ]]; then
 			if [[ "$(jq -r '.ServerVersion // ""' config.json)" != "" ]]; then
 				CURRENT_VERSION=$(jq -r '.ServerVersion' config.json)
@@ -200,7 +200,7 @@ if [[ -f config.json ]]; then
 	if [[ -n "$HYTALE_MAX_VIEW_RADIUS" ]]; then
 		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' config.json > config.tmp.json && mv config.tmp.json config.json
 	fi
-	LATEST_VERSION=$($HYTALE_DOWNLOADER -print-version)
+	LATEST_VERSION=$($HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -print-version)
 	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' config.json > config.tmp.json && mv config.tmp.json config.json
 fi
 	
