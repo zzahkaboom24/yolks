@@ -9,9 +9,6 @@ else
 	HYTALE_DOWNLOADER="./hytale-downloader/hytale-downloader-linux"
 fi
 
-"$HYTALE_DOWNLOADER" -patchline "$HYTALE_PATCHLINE" -print-version
-LATEST_VERSION=$("$HYTALE_DOWNLOADER" -patchline "$HYTALE_PATCHLINE" -print-version)
-
 if [[ -f ./config.json || -f ./HytaleServer.jar || -f ./HytaleServer.aot || -f ./whitelist.json || -f ./bans.json || -f ./whitelist.json ]]; then
 	if [[ ! -d "/home/container/Server" ]]; then
 		mkdir -p /home/container/Server
@@ -48,6 +45,8 @@ fi
 
 # Default to downloading (unless we find matching version)
 NEEDS_DOWNLOAD=true
+"$HYTALE_DOWNLOADER" -patchline "$HYTALE_PATCHLINE" -print-version
+LATEST_VERSION=$("$HYTALE_DOWNLOADER" -patchline "$HYTALE_PATCHLINE" -print-version)
 
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
