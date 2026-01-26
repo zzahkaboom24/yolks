@@ -102,6 +102,12 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 		echo -e "Attempting install!"
 	fi
 
+	if [[ ! -f "./Assets.zip" ]]; then
+		echo -e "Assets.zip is missing."
+		echo -e "Forcing redownload of server files!"
+		NEEDS_DOWNLOAD=true
+	fi
+
 	if [[ "$NEEDS_DOWNLOAD" == true ]]; then
 		if [[ -f "./Server/HytaleServer.jar" ]]; then
 			rm -rf ./Assets.zip
