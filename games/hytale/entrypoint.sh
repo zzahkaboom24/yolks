@@ -302,6 +302,8 @@ if [[ "${STARTUP:-}" =~ -jar\ Server/HytaleServer\.jar || "${0}" =~ -jar\ Server
   echo ""
   echo "To do:"
   echo " 1. Update to the latest Hytale egg version"
+  echo "    Said version can be found from the following link:"
+  echo ""
   echo ""
   echo "Server startup aborted to prevent usage on wrong path."
   echo "Update the egg and restart."
