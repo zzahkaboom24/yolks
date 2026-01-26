@@ -103,8 +103,6 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 	fi
 
 	if [[ ! -f "./Assets.zip" ]]; then
-		echo -e "Assets.zip is missing."
-		echo -e "Forcing redownload of server files!"
 		NEEDS_DOWNLOAD=true
 	fi
 
