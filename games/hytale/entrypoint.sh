@@ -3,6 +3,39 @@ set -e
 
 cd /home/container
 
+if [[ "${STARTUP:-}" =~ -jar\ Server/HytaleServer\.jar || "${0}" =~ -jar\ Server/HytaleServer\.jar ]]; then
+  echo ""
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo "!!                        OUTDATED STARTUP DETECTED                  !!"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  echo ""
+  echo "ERROR: Your startup command still uses 'Server/HytaleServer.jar'"
+  echo "       That's an outdated path from early versions of this Hytale egg."
+  echo ""
+  echo "What would happen on continued use:"
+  echo " - Server files (universe/, config.json, logs/, backups/, etc.) are"
+  echo "   generated in the wrong directory: /home/container"
+  echo "   instead of the intended /home/container/Server directory."
+  echo "   Ever since Hytale version 2026.01.24-6e2d4fc36"
+  echo "   server files must be located in /home/container/Server"
+  echo "   Additionally, the Server will not boot"
+  echo "   because we run exit 1 upon detecting Server/HytaleServer.jar used"
+  echo ""
+  echo "To do:"
+  echo " 1. Update to the latest Hytale egg version."
+  echo ""
+  echo "Up to date egg can be found from the following link:"
+  echo "https://github.com/zzahkaboom24/yolks/blob/master-sync/games/hytale/egg-hytale.json"
+  echo ""
+  echo "Or change the start up command of your egg/server to the following:"
+  echo "https://github.com/zzahkaboom24/yolks/blob/master-sync/games/hytale/startup-command.txt"
+  echo ""
+  echo "Server startup aborted to prevent usage on wrong path."
+  echo "Update the egg and restart."
+  echo ""
+  exit 1
+fi
+
 if [[ "$(uname -m)" == "aarch64" ]]; then
 	HYTALE_DOWNLOADER="qemu-x86_64-static ./hytale-downloader/hytale-downloader-linux"
 else
@@ -280,39 +313,6 @@ if [[ -f ./config.json ]]; then
 		jq --argjson maxviewradius "$HYTALE_MAX_VIEW_RADIUS" '.MaxViewRadius = $maxviewradius' ./config.json > ./config.tmp.json && mv ./config.tmp.json ./config.json
 	fi
 	jq --arg version "$LATEST_VERSION" '.ServerVersion = $version' ./config.json > ./config.tmp.json && mv ./config.tmp.json ./config.json
-fi
-
-if [[ "${STARTUP:-}" =~ -jar\ Server/HytaleServer\.jar || "${0}" =~ -jar\ Server/HytaleServer\.jar ]]; then
-  echo ""
-  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-  echo "!!                        OUTDATED STARTUP DETECTED                  !!"
-  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-  echo ""
-  echo "ERROR: Your startup command still uses 'Server/HytaleServer.jar'"
-  echo "       That's an outdated path from early versions of this Hytale egg."
-  echo ""
-  echo "What would happen on continued use:"
-  echo " - Server files (universe/, config.json, logs/, backups/, etc.) are"
-  echo "   generated in the wrong directory: /home/container"
-  echo "   instead of the intended /home/container/Server directory."
-  echo "   Ever since Hytale version 2026.01.24-6e2d4fc36"
-  echo "   server files must be located in /home/container/Server"
-  echo "   Additionally, the Server will not boot"
-  echo "   because we run exit 1 upon detecting Server/HytaleServer.jar used"
-  echo ""
-  echo "To do:"
-  echo " 1. Update to the latest Hytale egg version."
-  echo ""
-  echo "Up to date egg can be found from the following link:"
-  echo "https://github.com/zzahkaboom24/yolks/blob/master-sync/games/hytale/egg-hytale.json"
-  echo ""
-  echo "Or change the start up command of your egg/server to the following:"
-  echo "https://github.com/zzahkaboom24/yolks/blob/master-sync/games/hytale/startup-command.txt"
-  echo ""
-  echo "Server startup aborted to prevent usage on wrong path."
-  echo "Update the egg and restart."
-  echo ""
-  exit 1
 fi
 
 /java.sh $@
