@@ -37,9 +37,9 @@ if [[ "${STARTUP:-}" =~ -jar\ Server/HytaleServer\.jar || "${0}" =~ -jar\ Server
 fi
 
 if [[ "$(uname -m)" == "aarch64" ]]; then
-	HYTALE_DOWNLOADER="qemu-x86_64-static ../hytale-downloader/hytale-downloader-linux"
+	HYTALE_DOWNLOADER="qemu-x86_64-static /home/container/hytale-downloader/hytale-downloader-linux"
 else
-	HYTALE_DOWNLOADER="../hytale-downloader/hytale-downloader-linux"
+	HYTALE_DOWNLOADER="/home/container/hytale-downloader/hytale-downloader-linux"
 fi
 
 if [[ -f ./config.json || -f ./HytaleServer.jar || -f ./HytaleServer.aot || -f ./whitelist.json || -f ./bans.json || -f ./whitelist.json ]]; then
