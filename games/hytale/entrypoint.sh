@@ -78,8 +78,8 @@ fi
 
 # Default to downloading (unless we find matching version)
 NEEDS_DOWNLOAD=true
-"$HYTALE_DOWNLOADER" -patchline "$HYTALE_PATCHLINE" -print-version
-LATEST_VERSION=$("$HYTALE_DOWNLOADER" -patchline "$HYTALE_PATCHLINE" -print-version)
+$HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -print-version
+LATEST_VERSION=$($HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -print-version)
 
 # If HYTALE_SERVER_SESSION_TOKEN isn't set, assume the user will log in themselves, rather than a host's GSP
 if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
@@ -146,7 +146,7 @@ if [[ -z "$HYTALE_SERVER_SESSION_TOKEN" ]]; then
 			rm -rf ./Server/HytaleServer.aot
 			rm -rf ./Server/Licenses
 		fi
-		"$HYTALE_DOWNLOADER" -patchline "$HYTALE_PATCHLINE" -download-path ./HytaleServer.zip
+		$HYTALE_DOWNLOADER -patchline "$HYTALE_PATCHLINE" -download-path ./HytaleServer.zip
 	fi
 
 	if [[ -f "./HytaleServer.zip" ]]; then
