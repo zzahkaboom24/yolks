@@ -31,4 +31,10 @@ ENV         DEBIAN_FRONTEND=noninteractive
 
 RUN			apt update \
 				&& apt upgrade -y \
-				&& apt -y --no-install-recommends install ca-certificates curl lib32gcc-s1 git wget
+				&& apt -y --no-install-recommends install ca-certificates curl git wget
+
+RUN			if [ "$(uname -m)" = "aarch64" ]; then \
+				apt update && apt -y --no-install-recommends install qemu-user-static binfmt-support && rm -rf /var/lib/apt/lists/*; \
+			else \
+				apt update && apt -y --no-install-recommends install lib32gcc-s1 && rm -rf /var/lib/apt/lists/*; \
+			fi
