@@ -7,7 +7,8 @@ LABEL org.opencontainers.image.licenses=MIT
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Add i386 architecture (useful for 32-bit x86 compat via FEX)
-RUN apt-get update \
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
