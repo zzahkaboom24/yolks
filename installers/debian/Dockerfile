@@ -37,5 +37,5 @@ RUN			if [ "$(uname -m)" = "x86_64" ]; then \
 				dpkg --add-architecture i386 \
 				&& apt update \
 				&& apt upgrade -y \
-				&& apt -y --no-install-recommends install lib32gcc-s1 libsdl2-2.0-0:i386 \
+				&& apt -y --no-install-recommends install lib32gcc-s1 libsdl2-2.0-0:i386; \
 			fi
