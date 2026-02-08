@@ -20,7 +20,7 @@
 # SOFTWARE.
 #
 
-FROM        --platform=$TARGETOS/$TARGETARCH debian:bullseye-slim
+FROM        --platform=$TARGETOS/$TARGETARCH debian:trixie-slim
 
 LABEL       author="Matthew Penner" maintainer="matthew@pterodactyl.io"
 
@@ -33,8 +33,9 @@ RUN			apt update \
 				&& apt upgrade -y \
 				&& apt -y --no-install-recommends install ca-certificates curl git wget
 
-RUN			if [ "$(uname -m)" = "aarch64" ]; then \
-				apt update && apt -y --no-install-recommends install qemu-user-static binfmt-support && rm -rf /var/lib/apt/lists/*; \
-			else \
-				apt update && apt -y --no-install-recommends install lib32gcc-s1 && rm -rf /var/lib/apt/lists/*; \
+RUN			if [ "$(uname -m)" = "x86_64" ]; then \
+				dpkg --add-architecture i386 \
+				&& apt update \
+				&& apt upgrade -y \
+				&& apt -y --no-install-recommends install lib32gcc-s1 libsdl2-2.0-0:i386 \
 			fi
